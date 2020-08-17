@@ -13,7 +13,7 @@ function fix_host_permission() {
     docker run -v "${1}:${1}" --rm centos:7 bash -c "
         find \"${1}\" -print0 -user root 2>/dev/null \
            | xargs --null chown ${HOST_USER_ID}.${HOST_GROUP_ID} --no-dereference
-    "
+    " &> /dev/null
 }
 
 
@@ -28,9 +28,8 @@ function build_images() {
         :
       done
       echo "Building docker service '${service}' as image"
-      docker-compose build "${service}" >> /dev/null &
+      docker-compose build "${service}" &> /dev/null &
     done
-
     wait
     echo "All images built"
 }
@@ -40,7 +39,7 @@ function create_network() {
     network="10.5.0.0/24"
     gateway="$(echo ${network} | cut -f1-3 -d'.').254"
 
-    docker network ls | awk '{print $2}' | grep "^${network_name}$"  &> /dev/null
+    docker network ls | awk '{print $2}' | grep "^${network_name}$" &> /dev/null
     if [[ $? -eq 0 ]]; then
       echo "Docker network '${network_name}' already exists. Skipping."
       return 0
@@ -51,7 +50,7 @@ function create_network() {
         --subnet="${network}" \
         --ip-range="${network}" \
         --gateway="${gateway}" \
-        "${network_name}" > /dev/null
+        "${network_name}" &> /dev/null
 
     RET_CODE=$?
     if [[ ${RET_CODE} != 0 ]]; then
@@ -62,7 +61,7 @@ function create_network() {
 }
 
 function start_kdc() {
-    docker-compose -f docker-compose.yml up -d kdc-server-example-com
+    docker-compose -f docker-compose.yml up -d kdc-server-example-com > /dev/null
 }
 
 
@@ -74,7 +73,7 @@ add_principal -pw alice \"alice/admin@EXAMPLE.COM\"
 listprincs
 quit
 EOF
-" > /dev/null 
+" &> /dev/null
     echo "Added principal for the admin."
     echo ""
     echo "  To login, run:"
@@ -92,7 +91,7 @@ listprincs
 quit
 EOF
 chmod 777 /root/share/bob.keytab
-"> /dev/null 
+" &> /dev/null
     mkdir -p ./share/machine/
     fix_host_permission "$PWD/share/kdc/"
     mv ./share/kdc/bob.keytab ./share/machine/kerberos.keytab    
@@ -120,7 +119,7 @@ listprincs
 quit
 EOF
 chmod 777 /root/share/krb5-service.keytab
-"> /dev/null 
+"  &> /dev/null
     mkdir -p ./share/${SERVICE_NAME}/
     fix_host_permission "$PWD/share/kdc/"
     mv ./share/kdc/krb5-service.keytab ./share/${SERVICE_NAME}/kerberos.keytab   
@@ -154,7 +153,7 @@ function prepare_ssl_keystore() {
             -keystore "/root/share/ssl_keystore.jks" \
             -validity 10000 \
             -dname "cn=Unknown, ou=Unknown, o=Unknown, c=Unknown"\
-            -storepass "presto"
+            -storepass "presto" &> /dev/null
 
     RET_CODE=$?
     if [[ ${RET_CODE} != 0 ]]; then
