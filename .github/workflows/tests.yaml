@@ -1,0 +1,29 @@
+name: Integration tests
+
+on:
+  push:
+    branches: ['develop', 'master']
+  pull_request:
+    branches: ['develop', 'master']
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests
+        run: |
+          set -x
+          bash -x start.sh
+          sleep 20
+          bash -x test.sh
+      - name: Upload packages
+        if: always()
+        run: |
+          set -x
+          docker ps
+          find .
+          docker container ls
+          docker container ls --format '{{.ID}}' | xargs -t -n 1 docker logs

@@ -1,0 +1,66 @@
+version: '3'
+
+
+services:
+  machine-example-com:
+    build: 
+      context: .
+      dockerfile: ./krb5-centos/machine/Dockerfile
+    image: krb5-machine-example-com
+    container_name: krb5-machine-example-com
+    hostname: krb5-machine-example-com
+    domainname: example.com
+    networks:
+      example.com:
+        ipv4_address: 10.5.0.1
+
+    volumes:
+      - ./share/machine:/root/share
+
+    environment:
+      - KRB5_KTNAME=/root/share/kerberos.keytab
+      - KRB5_TRACE=/dev/stderr
+
+  kdc-server-example-com:
+    build: 
+      context: .
+      dockerfile: ./krb5-centos/kdc-server/Dockerfile
+    image: krb5-kdc-server-example-com
+    container_name: krb5-kdc-server-example-com
+    hostname: krb5-kdc-server-example-com
+    domainname: example.com
+    networks:
+      example.com:
+        ipv4_address: 10.5.0.2
+
+    volumes:
+      - ./share/kdc:/root/share
+
+    environment:
+      - KRB5_TRACE=/dev/stderr
+
+  presto-example-com:
+    build: 
+      context: .
+      dockerfile: ./krb5-centos/presto/Dockerfile
+    image: krb5-presto-example-com
+    container_name: krb5-presto-example-com
+    hostname: krb5-presto-example-com
+    domainname: example.com
+    networks:
+      example.com:
+        ipv4_address: 10.5.0.3
+    ports:
+      - "38080:8080"
+
+    volumes:
+      - ./share/presto:/home/presto
+
+    environment:
+      - KRB5_KTNAME=/home/presto/kerberos.keytab
+      - KRB5_TRACE=/dev/stderr
+
+
+networks:
+  example.com:
+    external: true
