@@ -20,7 +20,7 @@ function fix_host_permission() {
 function build_images() { 
     # By default it is number of CPUs
     n_processes=$(python -c 'import multiprocessing as mp; print(mp.cpu_count())')
-    echo "max of processes:  ${n_processes}"
+    echo "max of processes: ${n_processes}"
     # Build each service in parallel instead of sequentially
     services=$(docker-compose config --services)
     for service in ${services}; do
@@ -51,7 +51,7 @@ function create_network() {
         --subnet="${network}" \
         --ip-range="${network}" \
         --gateway="${gateway}" \
-        "${network_name}"
+        "${network_name}" > /dev/null
 
     RET_CODE=$?
     if [[ ${RET_CODE} != 0 ]]; then
@@ -129,13 +129,9 @@ chmod 777 /root/share/krb5-service.keytab
 
 function setup_kerberos_principals() {
     start_kdc || err "Failed to start KDC"
-    find ./share -type d | xargs ls -lah
     create_admin || err "Failed to add principal for the admin"
-    find ./share -type d | xargs ls -lah
     create_client || err "Failed to add principal for the client"
-    find ./share -type d | xargs ls -lah
     create_service "HTTP" "presto" || err "Failed to add principal for the \"presto\" service"
-    find ./share -type d | xargs ls -lah
 }
 
 function prepare_ssl_keystore() {

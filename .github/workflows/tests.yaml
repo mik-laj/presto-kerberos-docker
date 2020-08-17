@@ -15,14 +15,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: Run tests
         run: |
-          set -x
-          bash -x start.sh
+          bash start.sh
           sleep 20
-          bash -x test.sh
-      - name: Upload packages
+          bash test.sh
+      - name: Dunp logs
         if: always()
         run: |
-          set -x
           docker ps
           find .
           docker container ls
