@@ -61,7 +61,7 @@ function create_network() {
 }
 
 function start_kdc() {
-    docker-compose -f docker-compose.yml up -d kdc-server-example-com > /dev/null
+    docker-compose -f docker-compose.yml up -d kdc-server-example-com &> /dev/null
 }
 
 
