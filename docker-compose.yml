@@ -41,7 +41,7 @@ services:
       - POST_BOOTSTRAP_COMMAND=
         /opt/kerberos-utils/create_admin.sh alice alice;
         /opt/kerberos-utils/create_client.sh bob bob /root/share/client.keytab;
-        /opt/kerberos-utils/create_service.sh HTTP presto /root/share/presto.keytab
+        /opt/kerberos-utils/create_service.sh krb5-presto-example-com HTTP /root/share/presto.keytab
 
   presto-example-com:
     build: 

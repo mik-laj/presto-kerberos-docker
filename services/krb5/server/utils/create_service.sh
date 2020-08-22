@@ -2,15 +2,18 @@
 
 set -euo pipefail
 
-SERVICE_TYPE=$1
-SERVICE_NAME=$2
+SERVICE_NAME=$1
+SERVICE_TYPE=$2
 KEYTAB_FILE=$3
 
+DOMAIN_NAME=example.com
+REALM_NAME=EXAMPLE.COM
+
 cat << EOF | kadmin.local &>/dev/null
-add_principal -randkey "krb5-${SERVICE_NAME}-example-com.example.com@EXAMPLE.COM"
-add_principal -randkey "${SERVICE_TYPE}/krb5-${SERVICE_NAME}-example-com.example.com@EXAMPLE.COM"
-ktadd -k ${KEYTAB_FILE} -norandkey "krb5-${SERVICE_NAME}-example-com.example.com@EXAMPLE.COM"
-ktadd -k ${KEYTAB_FILE} -norandkey "${SERVICE_TYPE}/krb5-${SERVICE_NAME}-example-com.example.com@EXAMPLE.COM"
+add_principal -randkey "${SERVICE_NAME}.${DOMAIN_NAME}@${REALM_NAME}"
+add_principal -randkey "${SERVICE_TYPE}/${SERVICE_NAME}.${DOMAIN_NAME}@${REALM_NAME}"
+ktadd -k ${KEYTAB_FILE} -norandkey "${SERVICE_NAME}.${DOMAIN_NAME}@${REALM_NAME}"
+ktadd -k ${KEYTAB_FILE} -norandkey "${SERVICE_TYPE}/${SERVICE_NAME}.${DOMAIN_NAME}@${REALM_NAME}"
 quit
 EOF
 
