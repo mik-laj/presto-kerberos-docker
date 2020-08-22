@@ -61,44 +61,47 @@ function create_network() {
 }
 
 function start_kdc() {
-    docker-compose -f docker-compose.yml up -d kdc-server-example-com &> /dev/null
+    docker-compose \
+      -f docker-compose.yml \
+      up \
+        -d kdc-server-example-com
+#     &> /dev/null
 }
 
 
 function create_admin() {
-    docker-compose exec -T kdc-server-example-com /bin/bash -c "
-# Create users alice as admin
-cat << EOF  | kadmin.local
-add_principal -pw alice \"alice/admin@EXAMPLE.COM\"
-listprincs
-quit
-EOF
-" &> /dev/null
+    USERNAME=alice
+    PASSWORD=alice
+    docker-compose exec \
+      -T kdc-server-example-com\
+        /opt/kerberos-utils/create_admin.sh "${USERNAME}" "${PASSWORD}"
+#         \
+#        &> /dev/null
     echo "Added principal for the admin."
     echo ""
     echo "  To login, run:"
-    echo "    kadmin -p alice/admin@EXAMPLE.COM -w alice"
+    echo "    kadmin -p ${USERNAME}/admin@EXAMPLE.COM -w ${PASSWORD}"
     echo ""
 }
 
 function create_client() {
-    docker-compose exec -T kdc-server-example-com /bin/bash -c "
-# Create bob as normal user
-cat << EOF | kadmin.local
-add_principal -pw bob \"bob@EXAMPLE.COM\"
-ktadd -k /root/share/bob.keytab -norandkey \"bob@EXAMPLE.COM\"
-listprincs
-quit
-EOF
-chmod 777 /root/share/bob.keytab
-" &> /dev/null
+    USERNAME=bob
+    PASSWORD=bob
+    KEYTAB_FILE=/root/share/bob.keytab
+
+    docker-compose exec \
+      -T kdc-server-example-com\
+        /opt/kerberos-utils/create_client.sh "${USERNAME}" "${PASSWORD}" "${KEYTAB_FILE}"
+#         \
+#        &> /dev/null
+
     mkdir -p ./share/machine/
     fix_host_permission "$PWD/share/kdc/"
     mv ./share/kdc/bob.keytab ./share/machine/kerberos.keytab    
     echo "Added principal for the client."
     echo ""
     echo "  To use, run:"
-    echo "    kinit -kt /root/share/kerberos.keytab bob@EXAMPLE.COM"
+    echo "    kinit -kt ${KEYTAB_FILE} ${USERNAME}@EXAMPLE.COM"
     echo "    klist"
     echo ""
 
@@ -108,18 +111,14 @@ chmod 777 /root/share/bob.keytab
 function create_service() {
     SERVICE_TYPE=$1
     SERVICE_NAME=$2
-    docker-compose exec -T kdc-server-example-com /bin/bash -c "
-# Add principal for the service
-cat << EOF | kadmin.local
-add_principal -randkey \"krb5-${SERVICE_NAME}-example-com.example.com@EXAMPLE.COM\"
-add_principal -randkey \"${SERVICE_TYPE}/krb5-${SERVICE_NAME}-example-com.example.com@EXAMPLE.COM\"
-ktadd -k /root/share/krb5-service.keytab -norandkey \"krb5-${SERVICE_NAME}-example-com.example.com@EXAMPLE.COM\"
-ktadd -k /root/share/krb5-service.keytab -norandkey \"${SERVICE_TYPE}/krb5-${SERVICE_NAME}-example-com.example.com@EXAMPLE.COM\"
-listprincs
-quit
-EOF
-chmod 777 /root/share/krb5-service.keytab
-"  &> /dev/null
+    KEYTAB_FILE=/root/share/krb5-service.keytab
+
+    docker-compose exec \
+      -T kdc-server-example-com \
+        /opt/kerberos-utils/create_service.sh "${SERVICE_TYPE}" "${SERVICE_NAME}" "${KEYTAB_FILE}"
+#         \
+#        &> /dev/null
+
     mkdir -p ./share/${SERVICE_NAME}/
     fix_host_permission "$PWD/share/kdc/"
     mv ./share/kdc/krb5-service.keytab ./share/${SERVICE_NAME}/kerberos.keytab   
@@ -169,7 +168,7 @@ function main() {
     mkdir -p ./share
     setup_kerberos_principals || err "Fail to setup Kerberos Principals" || exit 1
     prepare_ssl_keystore || exit 1
-    docker-compose up -d presto-example-com
+    docker-compose up presto-example-com
 }
 
 main

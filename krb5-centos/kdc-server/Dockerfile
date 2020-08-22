@@ -35,6 +35,9 @@ RUN mkdir -pv /var/log/kerberos/ && \
 	touch /var/log/kerberos/krb5.log && \
 	kdb5_util -r EXAMPLE.COM -P krb5 create -s
 
+# kerberos utils
+COPY ./services/krb5/server/utils /opt/kerberos-utils/
+
 # supervisord configuration
 COPY ./services/krb5/server/supervisord.conf /etc/supervisord.conf
 
