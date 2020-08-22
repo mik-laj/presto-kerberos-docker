@@ -65,81 +65,16 @@ function start_kdc() {
       -f docker-compose.yml \
       up \
         -d kdc-server-example-com
-#     &> /dev/null
+     &> /dev/null
 }
 
-
-function create_admin() {
-    USERNAME=$1
-    PASSWORD=$2
-
-    docker-compose exec \
-      -T kdc-server-example-com\
-        /opt/kerberos-utils/create_admin.sh "${USERNAME}" "${PASSWORD}"
-#         \
-#        &> /dev/null
-
-    echo "Added principal for the admin."
-    echo ""
-    echo "  To login, run:"
-    echo "    kadmin -p ${USERNAME}/admin@EXAMPLE.COM -w ${PASSWORD}"
-    echo ""
-}
-
-function create_client() {
-    USERNAME=$1
-    PASSWORD=$2
-    KEYTAB_FILE=$3
-
-    docker-compose exec \
-      -T kdc-server-example-com\
-        /opt/kerberos-utils/create_client.sh "${USERNAME}" "${PASSWORD}" "${KEYTAB_FILE}"
-#         \
-#        &> /dev/null
-
-    mkdir -p ./share/machine/
-    fix_host_permission "$PWD/share/kdc/"
-    mv ./share/kdc/bob.keytab ./share/machine/kerberos.keytab    
-    echo "Added principal for the client."
-    echo ""
-    echo "  To use, run:"
-    echo "    kinit -kt ${KEYTAB_FILE} ${USERNAME}@EXAMPLE.COM"
-    echo "    klist"
-    echo ""
-
-}
-
-
-function create_service() {
-    SERVICE_TYPE=$1
-    SERVICE_NAME=$2
-    KEYTAB_FILE=$3
-
-    docker-compose exec \
-      -T kdc-server-example-com \
-        /opt/kerberos-utils/create_service.sh "${SERVICE_TYPE}" "${SERVICE_NAME}" "${KEYTAB_FILE}"
-#         \
-#        &> /dev/null
-
-    mkdir -p ./share/${SERVICE_NAME}/
-    fix_host_permission "$PWD/share/kdc/"
-    mv ./share/kdc/krb5-service.keytab ./share/${SERVICE_NAME}/kerberos.keytab   
-    echo "Added principal for the \"${SERVICE_NAME}\" service." 
-}
-
-function setup_kerberos_principals() {
-    start_kdc || err "Failed to start KDC"
-    create_admin "alice" "alice" || err "Failed to add principal for the admin"
-    create_client "bob" "bob" "/root/share/client.keytab" || err "Failed to add principal for the client"
-    create_service "HTTP" "presto" "/root/share/presto.keytab"|| err "Failed to add principal for the \"presto\" service"
-}
 
 function main() {
     build_images
     create_network || exit 1
     mkdir -p ./share
-    setup_kerberos_principals || err "Fail to setup Kerberos Principals" || exit 1
-    docker-compose up presto-example-com
+    start_kdc || err "Failed to start KDC"
+    docker-compose up -d presto-example-com
 }
 
 main

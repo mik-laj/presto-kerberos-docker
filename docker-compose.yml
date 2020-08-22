@@ -38,6 +38,10 @@ services:
 
     environment:
       - KRB5_TRACE=/dev/stderr
+      - POST_BOOTSTRAP_COMMAND=
+        /opt/kerberos-utils/create_admin.sh alice alice;
+        /opt/kerberos-utils/create_client.sh bob bob /root/share/client.keytab;
+        /opt/kerberos-utils/create_service.sh HTTP presto /root/share/presto.keytab
 
   presto-example-com:
     build: 

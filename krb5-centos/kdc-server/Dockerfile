@@ -41,5 +41,9 @@ COPY ./services/krb5/server/utils /opt/kerberos-utils/
 # supervisord configuration
 COPY ./services/krb5/server/supervisord.conf /etc/supervisord.conf
 
+# entrypoint
+COPY ./services/krb5/server/entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
 # when container is starting
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
