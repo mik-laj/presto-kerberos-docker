@@ -7,14 +7,6 @@ function err() {
   return 1
 }
 
-function fix_host_permission() {
-    HOST_USER_ID="$(id -ur)"
-    HOST_GROUP_ID="$(id -gr)"
-    docker run -v "${1}:${1}" --rm centos:7 bash -c "
-        find \"${1}\" -print0 -user root 2>/dev/null \
-           | xargs --null chown ${HOST_USER_ID}.${HOST_GROUP_ID} --no-dereference
-    " &> /dev/null
-}
 
 
 function build_images() { 
@@ -54,18 +46,10 @@ function create_network() {
 
     RET_CODE=$?
     if [[ ${RET_CODE} != 0 ]]; then
-        err "Faill to create network"
+        err "Fail to create network"
         return ${RET_CODE}
     fi
     echo "Created network: ${network_name}"
-}
-
-function start_kdc() {
-    docker-compose \
-      -f docker-compose.yml \
-      up \
-        -d kdc-server-example-com
-     &> /dev/null
 }
 
 
@@ -73,8 +57,7 @@ function main() {
     build_images
     create_network || exit 1
     mkdir -p ./share
-    start_kdc || err "Failed to start KDC"
-    docker-compose up -d presto-example-com
+    docker-compose up -d
 }
 
 main
