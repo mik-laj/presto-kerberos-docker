@@ -12,4 +12,5 @@ ktadd -k ${KEYTAB_FILE} -norandkey "${USERNAME}@EXAMPLE.COM"
 listprincs
 quit
 EOF
+
 chmod 777 "${KEYTAB_FILE}"

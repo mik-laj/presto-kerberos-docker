@@ -14,4 +14,5 @@ ktadd -k ${KEYTAB_FILE} -norandkey "${SERVICE_TYPE}/krb5-${SERVICE_NAME}-example
 listprincs
 quit
 EOF
+
 chmod 777 "${KEYTAB_FILE}"

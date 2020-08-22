@@ -70,13 +70,15 @@ function start_kdc() {
 
 
 function create_admin() {
-    USERNAME=alice
-    PASSWORD=alice
+    USERNAME=$1
+    PASSWORD=$2
+
     docker-compose exec \
       -T kdc-server-example-com\
         /opt/kerberos-utils/create_admin.sh "${USERNAME}" "${PASSWORD}"
 #         \
 #        &> /dev/null
+
     echo "Added principal for the admin."
     echo ""
     echo "  To login, run:"
@@ -85,9 +87,9 @@ function create_admin() {
 }
 
 function create_client() {
-    USERNAME=bob
-    PASSWORD=bob
-    KEYTAB_FILE=/root/share/bob.keytab
+    USERNAME=$1
+    PASSWORD=$2
+    KEYTAB_FILE=$3
 
     docker-compose exec \
       -T kdc-server-example-com\
@@ -111,7 +113,7 @@ function create_client() {
 function create_service() {
     SERVICE_TYPE=$1
     SERVICE_NAME=$2
-    KEYTAB_FILE=/root/share/krb5-service.keytab
+    KEYTAB_FILE=$3
 
     docker-compose exec \
       -T kdc-server-example-com \
@@ -127,9 +129,9 @@ function create_service() {
 
 function setup_kerberos_principals() {
     start_kdc || err "Failed to start KDC"
-    create_admin || err "Failed to add principal for the admin"
-    create_client || err "Failed to add principal for the client"
-    create_service "HTTP" "presto" || err "Failed to add principal for the \"presto\" service"
+    create_admin "alice" "alice" || err "Failed to add principal for the admin"
+    create_client "bob" "bob" "/root/share/client.keytab" || err "Failed to add principal for the client"
+    create_service "HTTP" "presto" "/root/share/presto.keytab"|| err "Failed to add principal for the \"presto\" service"
 }
 
 function main() {
