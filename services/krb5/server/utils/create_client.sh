@@ -6,9 +6,11 @@ USERNAME=$1
 PASSWORD=$2
 KEYTAB_FILE=$3
 
+REALM_NAME=EXAMPLE.COM
+
 cat << EOF | kadmin.local &>/dev/null
-add_principal -pw $PASSWORD "${USERNAME}@EXAMPLE.COM"
-ktadd -k ${KEYTAB_FILE} -norandkey "${USERNAME}@EXAMPLE.COM"
+add_principal -pw $PASSWORD "${USERNAME}@${REALM_NAME}"
+ktadd -k ${KEYTAB_FILE} -norandkey "${USERNAME}@${REALM_NAME}"
 listprincs
 quit
 EOF
