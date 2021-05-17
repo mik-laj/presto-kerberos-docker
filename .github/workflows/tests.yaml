@@ -13,11 +13,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Build image
+        run: docker-compose build --parallel
       - name: Run tests
         run: |
-          bash start.sh
+          docker-compose up -d
           sleep 20
-          bash test.sh
+          ./test.sh
       - name: Dunp logs
         if: always()
         run: |
