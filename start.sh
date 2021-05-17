@@ -107,43 +107,11 @@ function setup_kerberos_principals() {
     create_service "HTTP" "presto" || err "Failed to add principal for the \"presto\" service"
 }
 
-function prepare_ssl_keystore() {
-    if [[ -f "./share/presto/ssl_keystore.jks" ]]; then
-        echo "Certificate already exists. Skipping certificate generation."
-        return 0
-    fi
-
-    mkdir -p ./share/presto/
-    set -x
-    docker run \
-        --name presto \
-        --rm \
-        --user 0 \
-        -v "$PWD/share/presto/:/root/share" \
-        starburstdata/presto:338-e.7 \
-        keytool \
-            -genkeypair \
-            -alias presto \
-            -keyalg RSA \
-            -keystore "/root/share/ssl_keystore.jks" \
-            -validity 10000 \
-            -dname "cn=Unknown, ou=Unknown, o=Unknown, c=Unknown"\
-            -storepass "presto"
-
-    RET_CODE=$?
-    if [[ ${RET_CODE} != 0 ]]; then
-        err "Fail to prepare SSL Keystore"
-        return ${RET_CODE}
-    fi
-    echo "Created SSL Keystore"
-}
-
 function main() {
     build_images
     mkdir -p ./share
     setup_kerberos_principals || err "Fail to setup Kerberos Principals" || exit 1
-    prepare_ssl_keystore || exit 1
-    docker-compose up -d presto-example-com
+    docker-compose up presto-example-com
 }
 
 main
