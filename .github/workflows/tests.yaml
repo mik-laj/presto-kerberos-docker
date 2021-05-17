@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build image
-        run: ./build-image.sh
+        run: docker-compose build --parallel
       - name: Run tests
         run: |
           docker-compose up -d
