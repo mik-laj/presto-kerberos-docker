@@ -34,32 +34,6 @@ function build_images() {
     echo "All images built"
 }
 
-function create_network() {
-    network_name="example.com"
-    network="10.5.0.0/24"
-    gateway="$(echo ${network} | cut -f1-3 -d'.').254"
-
-    docker network ls | awk '{print $2}' | grep "^${network_name}$" &> /dev/null
-    if [[ $? -eq 0 ]]; then
-      echo "Docker network '${network_name}' already exists. Skipping."
-      return 0
-    fi
-
-    docker network create \
-        --driver=bridge \
-        --subnet="${network}" \
-        --ip-range="${network}" \
-        --gateway="${gateway}" \
-        "${network_name}" &> /dev/null
-
-    RET_CODE=$?
-    if [[ ${RET_CODE} != 0 ]]; then
-        err "Faill to create network"
-        return ${RET_CODE}
-    fi
-    echo "Created network: ${network_name}"
-}
-
 function start_kdc() {
     docker-compose -f docker-compose.yml up -d kdc-server-example-com &> /dev/null
 }
@@ -166,7 +140,6 @@ function prepare_ssl_keystore() {
 
 function main() {
     build_images
-    create_network || exit 1
     mkdir -p ./share
     setup_kerberos_principals || err "Fail to setup Kerberos Principals" || exit 1
     prepare_ssl_keystore || exit 1
