@@ -15,10 +15,10 @@ services:
         ipv4_address: 10.5.0.1
 
     volumes:
-      - ./share/machine:/root/share
+      - ./share:/root/share
 
     environment:
-      - KRB5_KTNAME=/root/share/kerberos.keytab
+      - KRB5_KTNAME=/root/share/client.keytab
       - KRB5_TRACE=/dev/stderr
 
   kdc-server-example-com:
@@ -34,7 +34,7 @@ services:
         ipv4_address: 10.5.0.2
 
     volumes:
-      - ./share/kdc:/root/share
+      - ./share:/root/share
 
     environment:
       - KRB5_TRACE=/dev/stderr
@@ -55,10 +55,10 @@ services:
       - "38080:8080"
 
     volumes:
-      - ./share/presto:/home/presto
+      - ./share:/home/presto
 
     environment:
-      - KRB5_KTNAME=/home/presto/kerberos.keytab
+      - KRB5_KTNAME=/home/presto/presto.keytab
       - KRB5_TRACE=/dev/stderr
 
 
