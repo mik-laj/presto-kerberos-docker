@@ -50,7 +50,7 @@ function create_admin() {
     echo "Added principal for the admin."
     echo ""
     echo "  To login, run:"
-    echo "    kadmin -p alice/admin@EXAMPLE.COM -w alice"
+    echo "    kadmin -p ${USERNAME}/admin@EXAMPLE.COM -w ${PASSWORD}"
     echo ""
 }
 
@@ -63,13 +63,10 @@ function create_client() {
       -T kdc-server-example-com\
         /opt/kerberos-utils/create_client.sh "${USERNAME}" "${PASSWORD}" "${KEYTAB_FILE}" &> /dev/null
 
-    mkdir -p ./share/machine/
-    fix_host_permission "$PWD/share/kdc/"
-    mv ./share/kdc/bob.keytab ./share/machine/kerberos.keytab    
     echo "Added principal for the client."
     echo ""
     echo "  To use, run:"
-    echo "    kinit -kt /root/share/kerberos.keytab bob@EXAMPLE.COM"
+    echo "    kinit -k ${USERNAME}@EXAMPLE.COM"
     echo "    klist"
     echo ""
 
@@ -85,9 +82,6 @@ function create_service() {
       -T kdc-server-example-com \
         /opt/kerberos-utils/create_service.sh "${SERVICE_TYPE}" "${SERVICE_NAME}" "${KEYTAB_FILE}" &> /dev/null
 
-    mkdir -p ./share/${SERVICE_NAME}/
-    fix_host_permission "$PWD/share/kdc/"
-    mv ./share/kdc/krb5-service.keytab ./share/${SERVICE_NAME}/kerberos.keytab   
     echo "Added principal for the \"${SERVICE_NAME}\" service." 
 }
 
