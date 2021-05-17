@@ -20,7 +20,7 @@ fi
 function send_query {
   SQL="${1}"
   RESPONSE="$(docker-compose run --rm -e KRB5_TRACE=/dev/null machine-example-com bash -c "
-  kinit -kt /root/share/kerberos.keytab bob@EXAMPLE.COM &>/dev/null;
+  kinit -k bob@EXAMPLE.COM &>/dev/null;
   curl -X POST \
     --insecure \
     --negotiate \
@@ -36,7 +36,7 @@ function send_query {
 
   while [[ "${STATE}" == "QUEUED" ]]; do
     RESPONSE="$(docker-compose run --rm -e KRB5_TRACE=/dev/null machine-example-com bash -c "
-    kinit -kt /root/share/kerberos.keytab bob@EXAMPLE.COM &>/dev/null;
+    kinit -k bob@EXAMPLE.COM &>/dev/null;
     curl -X GET \
       --insecure \
       --negotiate \
@@ -52,7 +52,7 @@ function send_query {
   fi
   while [[ ! "${NEXT_URL}" == "null" ]]; do
     RESPONSE="$(docker-compose run --rm -e KRB5_TRACE=/dev/null machine-example-com bash -c "
-    kinit -kt /root/share/kerberos.keytab bob@EXAMPLE.COM &>/dev/null;
+    kinit -k bob@EXAMPLE.COM &>/dev/null;
     curl -X GET \
       --insecure \
       --negotiate \
