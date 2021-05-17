@@ -111,7 +111,7 @@ function main() {
     build_images
     mkdir -p ./share
     setup_kerberos_principals || err "Fail to setup Kerberos Principals" || exit 1
-    docker-compose up presto-example-com
+    docker-compose up -d presto-example-com
 }
 
 main
