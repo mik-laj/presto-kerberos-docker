@@ -24,19 +24,10 @@ function build_images() {
     echo "All images built"
 }
 
-function start_kdc() {
-    docker-compose \
-      -f docker-compose.yml \
-      up \
-        -d kdc-server-example-com
-     &> /dev/null
-}
-
 function main() {
     build_images
     mkdir -p ./share
-    start_kdc || err "Failed to start KDC"
-    docker-compose up -d presto-example-com
+    docker-compose up -d
 }
 
 main
