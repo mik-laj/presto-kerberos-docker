@@ -81,4 +81,4 @@ cat "${PRESTO_CONFIG}"
 log "Waiting for keytab ${KRB5_KTNAME}"
 check_service "Keytab" "test -f ${KRB5_KTNAME}" 30
 touch /tmp/presto-initiaalized
-exec /bin/sh -c "$@"
+exec "$@"
