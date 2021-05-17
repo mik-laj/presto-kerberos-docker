@@ -1,4 +1,4 @@
-FROM prestosql/presto:330
+FROM starburstdata/presto:338-e.7
 
 # Obtain root privileges 
 USER 0
@@ -13,10 +13,10 @@ COPY ./services/krb5/client/krb5.conf /etc/krb5.conf
 ENV JKS_KEYSTORE_FILE="/home/presto/ssl_keystore.jks"
 ENV JKS_KEYSTORE_PASS="presto"
 
-RUN JVM_CONFIG="/usr/lib/presto/default/etc/jvm.config" && \
+RUN JVM_CONFIG="/usr/lib/presto/etc/jvm.config" && \
     echo "-Dsun.security.krb5.debug=true" >> "${JVM_CONFIG}" && \
     echo "-Dlog.enable-console=true" >> "${JVM_CONFIG}" && \
-    PRESTO_CONFIG="/usr/lib/presto/default/etc/config.properties" && \
+    PRESTO_CONFIG="/usr/lib/presto/etc/config.properties" && \
     echo "http-server.authentication.type=KERBEROS" >> "${PRESTO_CONFIG}" && \
     echo "http-server.authentication.krb5.service-name=HTTP" >> "${PRESTO_CONFIG}" && \
     echo "http-server.authentication.krb5.principal-hostname=krb5-presto-example-com.example.com" >> "${PRESTO_CONFIG}" && \

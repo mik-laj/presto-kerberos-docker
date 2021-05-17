@@ -140,12 +140,13 @@ function prepare_ssl_keystore() {
     fi
 
     mkdir -p ./share/presto/
+    set -x
     docker run \
         --name presto \
         --rm \
         --user 0 \
         -v "$PWD/share/presto/:/root/share" \
-        prestosql/presto:330 \
+        starburstdata/presto:338-e.7 \
         keytool \
             -genkeypair \
             -alias presto \
@@ -153,7 +154,7 @@ function prepare_ssl_keystore() {
             -keystore "/root/share/ssl_keystore.jks" \
             -validity 10000 \
             -dname "cn=Unknown, ou=Unknown, o=Unknown, c=Unknown"\
-            -storepass "presto" &> /dev/null
+            -storepass "presto"
 
     RET_CODE=$?
     if [[ ${RET_CODE} != 0 ]]; then
