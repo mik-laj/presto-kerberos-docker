@@ -21,7 +21,4 @@ jobs:
       - name: Dunp logs
         if: always()
         run: |
-          docker ps
-          find .
-          docker container ls
-          docker container ls --format '{{.ID}}' | xargs -t -n 1 docker logs
+          bash dump-logs.sh
