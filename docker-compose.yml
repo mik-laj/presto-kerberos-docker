@@ -41,15 +41,15 @@ services:
       - POST_BOOTSTRAP_COMMAND=
         /opt/kerberos-utils/create_admin.sh alice alice;
         /opt/kerberos-utils/create_client.sh bob bob /root/share/client.keytab;
-        /opt/kerberos-utils/create_service.sh krb5-presto-example-com HTTP /root/share/presto.keytab
+        /opt/kerberos-utils/create_service.sh presto-kerberos HTTP /root/share/presto.keytab
 
-  presto-example-com:
+  presto-kerberos:
     build: 
       context: .
       dockerfile: ./krb5-centos/presto/Dockerfile
-    image: krb5-presto-example-com
-    container_name: krb5-presto-example-com
-    hostname: krb5-presto-example-com
+    image: presto-kerberos
+    container_name: presto-kerberos
+    hostname: presto-kerberos
     domainname: example.com
     networks:
       example.com:

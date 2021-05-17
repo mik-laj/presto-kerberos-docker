@@ -25,7 +25,7 @@ function send_query {
     --insecure \
     --negotiate \
     -u : \
-    'https://krb5-presto-example-com:7778/v1/statement' \
+    'https://presto-kerberos:7778/v1/statement' \
     --data ${SQL@Q}
   ")"
   echo "RESPONSE=${RESPONSE}"
