@@ -38,5 +38,8 @@ RUN mkdir -pv /var/log/kerberos/ && \
 # supervisord configuration
 COPY ./services/krb5/server/supervisord.conf /etc/supervisord.conf
 
+# kerberos utils
+COPY ./services/krb5/server/utils /opt/kerberos-utils/
+
 # when container is starting
 CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]

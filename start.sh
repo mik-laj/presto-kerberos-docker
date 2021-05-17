@@ -61,7 +61,7 @@ function create_client() {
 
     docker-compose exec \
       -T kdc-server-example-com\
-        /opt/kerberos-utils/create_client.sh "${USERNAME}" "${PASSWORD}" "${KEYTAB_FILE}" &> /dev/null
+        /opt/kerberos-utils/create_client.sh "${USERNAME}" "${PASSWORD}" "${KEYTAB_FILE}"
 
     echo "Added principal for the client."
     echo ""
@@ -80,7 +80,7 @@ function create_service() {
 
     docker-compose exec \
       -T kdc-server-example-com \
-        /opt/kerberos-utils/create_service.sh "${SERVICE_TYPE}" "${SERVICE_NAME}" "${KEYTAB_FILE}" &> /dev/null
+        /opt/kerberos-utils/create_service.sh "${SERVICE_TYPE}" "${SERVICE_NAME}" "${KEYTAB_FILE}"
 
     echo "Added principal for the \"${SERVICE_NAME}\" service." 
 }
