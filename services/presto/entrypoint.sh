@@ -62,22 +62,26 @@ fi
 
 JVM_CONFIG="/usr/lib/presto/etc/jvm.config"
 log "Add debug Kerberos options to ${JVM_CONFIG}"
-echo "-Dsun.security.krb5.debug=true" >> "${JVM_CONFIG}"
-echo "-Dlog.enable-console=true" >> "${JVM_CONFIG}"
+cat >> "${JVM_CONFIG}" <<EOL
+-Dsun.security.krb5.debug=true
+-Dlog.enable-console=true
+EOL
 
 cat "${JVM_CONFIG}"
 PRESTO_CONFIG="/usr/lib/presto/etc/config.properties"
 log "Set up SSL and Kerberos in ${PRESTO_CONFIG}"
-echo "http-server.authentication.type=KERBEROS" >> "${PRESTO_CONFIG}"
-echo "http-server.authentication.krb5.service-name=HTTP" >> "${PRESTO_CONFIG}"
-echo "http-server.authentication.krb5.principal-hostname=presto-kerberos.example.com" >> "${PRESTO_CONFIG}"
-echo "http-server.authentication.krb5.keytab=${KRB5_KTNAME}" >> "${PRESTO_CONFIG}"
-echo "http.authentication.krb5.config=${KRB5_CONFIG}" >> "${PRESTO_CONFIG}"
-echo "http-server.https.enabled=true" >> "${PRESTO_CONFIG}"
-echo "http-server.https.port=7778" >> "${PRESTO_CONFIG}"
-echo "http-server.https.keystore.path=${JKS_KEYSTORE_FILE}" >> "${PRESTO_CONFIG}"
-echo "http-server.https.keystore.key=${JKS_KEYSTORE_PASS}"  >> "${PRESTO_CONFIG}"
-echo "node.internal-address-source=FQDN" >> "${PRESTO_CONFIG}"
+cat >> "${PRESTO_CONFIG}" << EOL
+http-server.authentication.type=KERBEROS
+http-server.authentication.krb5.service-name=HTTP
+http-server.authentication.krb5.principal-hostname=presto-kerberos.example.com
+http-server.authentication.krb5.keytab=${KRB5_KTNAME}
+http.authentication.krb5.config=${KRB5_CONFIG}
+http-server.https.enabled=true
+http-server.https.port=7778
+http-server.https.keystore.path=${JKS_KEYSTORE_FILE}
+http-server.https.keystore.key=${JKS_KEYSTORE_PASS}
+node.internal-address-source=FQDN
+EOL
 
 cat "${PRESTO_CONFIG}"
 log "Waiting for keytab ${KRB5_KTNAME}"

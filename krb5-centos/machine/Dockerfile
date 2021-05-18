@@ -8,10 +8,10 @@ FROM centos:8
 WORKDIR /root/
 
 # Dev stuff
-RUN dnf -y install curl wget
+RUN dnf -y install curl wget && dnf clean all
 
 # Kerberos client
-RUN dnf -y install krb5-workstation krb5-libs
+RUN dnf -y install krb5-workstation krb5-libs && dnf clean all
 
 # Kerberos client configuration
 ENV KRB5_CONFIG=/etc/krb5.conf

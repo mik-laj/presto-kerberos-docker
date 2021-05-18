@@ -10,5 +10,3 @@ set -xeuo pipefail
   fi
 ) &
 exec "$@"
-
-

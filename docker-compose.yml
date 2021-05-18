@@ -1,8 +1,7 @@
+---
 version: '3'
 
-
 services:
-
   kdc-server-example-com:
     build:
       context: .

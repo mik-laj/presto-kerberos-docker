@@ -8,15 +8,15 @@ FROM centos:8
 WORKDIR /root/
 
 # Dev stuff
-RUN dnf -y install curl wget
+RUN dnf -y install curl wget && dnf clean all
 
 # fforego
 RUN curl -O https://bin.equinox.io/c/ekMN3bCZFUn/forego-stable-linux-amd64.tgz && \
- 	tar xf forego-stable-linux-amd64.tgz && \
-	mv forego /usr/local/bin/forego
+    tar xf forego-stable-linux-amd64.tgz && \
+    mv forego /usr/local/bin/forego
 
 # kerberos server
-RUN dnf -y install krb5-server krb5-libs
+RUN dnf -y install krb5-server krb5-libs && dnf clean all
 
 # kerberos server configuration
 ENV KRB5_CONFIG=/etc/krb5.conf
@@ -26,10 +26,10 @@ COPY ./services/krb5/server/kdc.conf /var/kerberos/krb5kdc/kdc.conf
 COPY ./services/krb5/server/kadm5.acl /var/kerberos/krb5kdc/kadm5.acl
 COPY ./services/krb5/client/krb5.conf /etc/krb5.conf
 RUN mkdir -pv /var/log/kerberos/ && \
-	touch /var/log/kerberos/kadmin.log && \
-	touch /var/log/kerberos/krb5lib.log && \
-	touch /var/log/kerberos/krb5.log && \
-	kdb5_util -r EXAMPLE.COM -P krb5 create -s
+    touch /var/log/kerberos/kadmin.log && \
+    touch /var/log/kerberos/krb5lib.log && \
+    touch /var/log/kerberos/krb5.log && \
+    kdb5_util -r EXAMPLE.COM -P krb5 create -s
 
 # forego configuration
 COPY ./services/krb5/server/Procfile /root/Procfile

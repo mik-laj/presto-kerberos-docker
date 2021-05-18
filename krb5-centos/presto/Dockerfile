@@ -1,6 +1,6 @@
 FROM starburstdata/presto:350-e.7
 
-# Obtain root privileges 
+# Obtain root privileges
 USER 0
 
 # Kerberos client configuration
