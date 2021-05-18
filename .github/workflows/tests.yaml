@@ -23,4 +23,3 @@ jobs:
       - name: Dunp logs
         if: always()
         run: |
-          bash dump-logs.sh
