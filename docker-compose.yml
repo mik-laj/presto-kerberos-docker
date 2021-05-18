@@ -2,27 +2,9 @@ version: '3'
 
 
 services:
-  machine-example-com:
-    build: 
-      context: .
-      dockerfile: ./krb5-centos/machine/Dockerfile
-    image: krb5-machine-example-com
-    container_name: krb5-machine-example-com
-    hostname: krb5-machine-example-com
-    domainname: example.com
-    networks:
-      example.com:
-        ipv4_address: 10.5.0.1
-
-    volumes:
-      - ./share:/root/share
-
-    environment:
-      - KRB5_KTNAME=/root/share/client.keytab
-      - KRB5_TRACE=/dev/stderr
 
   kdc-server-example-com:
-    build: 
+    build:
       context: .
       dockerfile: ./krb5-centos/kdc-server/Dockerfile
     image: krb5-kdc-server-example-com
@@ -32,19 +14,23 @@ services:
     networks:
       example.com:
         ipv4_address: 10.5.0.2
-
     volumes:
       - ./share:/root/share
-
     environment:
       - KRB5_TRACE=/dev/stderr
       - POST_BOOTSTRAP_COMMAND=
         /opt/kerberos-utils/create_admin.sh alice alice;
         /opt/kerberos-utils/create_client.sh bob bob /root/share/client.keytab;
         /opt/kerberos-utils/create_service.sh presto-kerberos HTTP /root/share/presto.keytab
+    healthcheck:
+      test: 'ss -ltpn | grep :88'
+      interval: 5s
+      timeout: 30s
+      retries: 50
+    restart: always
 
   presto-kerberos:
-    build: 
+    build:
       context: .
       dockerfile: ./krb5-centos/presto/Dockerfile
     image: presto-kerberos
@@ -54,17 +40,44 @@ services:
     networks:
       example.com:
         ipv4_address: 10.5.0.3
-
     ports:
       - "38080:8080"
-
     volumes:
       - ./share:/home/presto
-
     environment:
       - KRB5_KTNAME=/home/presto/presto.keytab
       - KRB5_TRACE=/dev/stderr
+    depends_on:
+      kdc-server-example-com:
+        condition: service_healthy
+    healthcheck:
+      test: curl --fail http://localhost:8080/v1/info/ | grep '"starting":false'
+      interval: 5s
+      timeout: 30s
+      retries: 50
+    restart: always
 
+  machine-example-com:
+    build:
+      context: .
+      dockerfile: ./krb5-centos/machine/Dockerfile
+    image: krb5-machine-example-com
+    container_name: krb5-machine-example-com
+    hostname: krb5-machine-example-com
+    domainname: example.com
+    networks:
+      example.com:
+        ipv4_address: 10.5.0.1
+    volumes:
+      - ./share:/root/share
+    environment:
+      - KRB5_KTNAME=/root/share/client.keytab
+      - KRB5_TRACE=/dev/stderr
+    depends_on:
+      kdc-server-example-com:
+        condition: service_healthy
+      presto-kerberos:
+        condition: service_healthy
 
 networks:
   example.com:

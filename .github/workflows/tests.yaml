@@ -18,7 +18,6 @@ jobs:
       - name: Run tests
         run: |
           docker-compose up -d
-          sleep 20
           ./test.sh
       - name: Dunp logs
         if: always()
