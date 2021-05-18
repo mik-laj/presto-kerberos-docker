@@ -49,14 +49,16 @@ fi
 log "Generate self-signed SSL certificate"
 JKS_KEYSTORE_FILE=/tmp/ssl_keystore.jks
 JKS_KEYSTORE_PASS=presto
-keytool \
-    -genkeypair \
-    -alias "presto-ssl" \
-    -keyalg RSA \
-    -keystore "${JKS_KEYSTORE_FILE}" \
-    -validity 10000 \
-    -dname "cn=Unknown, ou=Unknown, o=Unknown, c=Unknown"\
-    -storepass "${JKS_KEYSTORE_PASS}"
+if [ ! -f "${JKS_KEYSTORE_FILE}" ]; then
+    keytool \
+        -genkeypair \
+        -alias "presto-ssl" \
+        -keyalg RSA \
+        -keystore "${JKS_KEYSTORE_FILE}" \
+        -validity 10000 \
+        -dname "cn=Unknown, ou=Unknown, o=Unknown, c=Unknown"\
+        -storepass "${JKS_KEYSTORE_PASS}"
+fi
 
 JVM_CONFIG="/usr/lib/presto/etc/jvm.config"
 log "Add debug Kerberos options to ${JVM_CONFIG}"
