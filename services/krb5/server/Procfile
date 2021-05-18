@@ -1,0 +1,2 @@
+krb5-kdc:/usr/sbin/krb5kdc -n
+krb5-admin-server:/usr/sbin/kadmind -nofork

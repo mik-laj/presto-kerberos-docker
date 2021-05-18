@@ -22,4 +22,4 @@ jobs:
           ./test.sh
       - name: Dunp logs
         if: always()
-        run: |
+        run: docker-compose logs

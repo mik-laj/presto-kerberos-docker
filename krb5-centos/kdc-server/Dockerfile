@@ -2,25 +2,21 @@
 #
 # see docker-compose.yml
 
-FROM centos:7
+FROM centos:8
 
 # build environment
 WORKDIR /root/
 
 # Dev stuff
-RUN yum -y install curl wget
+RUN dnf -y install curl wget
 
-# python
-RUN curl "https://bootstrap.pypa.io/pip/2.7/get-pip.py" -o /tmp/get-pip.py && \
-	python /tmp/get-pip.py && \
-	rm /tmp/get-pip.py
-
-# supervisord
-RUN pip install supervisor==3.3.3 && \
-	mkdir -p /var/log/supervisord/
+# fforego
+RUN curl -O https://bin.equinox.io/c/ekMN3bCZFUn/forego-stable-linux-amd64.tgz && \
+ 	tar xf forego-stable-linux-amd64.tgz && \
+	mv forego /usr/local/bin/forego
 
 # kerberos server
-RUN yum -y install ntp krb5-server krb5-libs
+RUN dnf -y install krb5-server krb5-libs
 
 # kerberos server configuration
 ENV KRB5_CONFIG=/etc/krb5.conf
@@ -35,8 +31,8 @@ RUN mkdir -pv /var/log/kerberos/ && \
 	touch /var/log/kerberos/krb5.log && \
 	kdb5_util -r EXAMPLE.COM -P krb5 create -s
 
-# supervisord configuration
-COPY ./services/krb5/server/supervisord.conf /etc/supervisord.conf
+# forego configuration
+COPY ./services/krb5/server/Procfile /root/Procfile
 
 # kerberos utils
 COPY ./services/krb5/server/utils /opt/kerberos-utils/
@@ -46,4 +42,4 @@ COPY ./services/krb5/server/entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
 # when container is starting
-CMD ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
+CMD ["forego", "start"]
