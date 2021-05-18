@@ -43,7 +43,7 @@ function log() {
 }
 
 if [ -f /tmp/presto-initiaalized ]; then
-  exec /bin/sh -c "$@"
+    exec "$@"
 fi
 
 log "Generate self-signed SSL certificate"
