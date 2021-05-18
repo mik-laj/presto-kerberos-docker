@@ -8,19 +8,19 @@ FROM centos:8
 WORKDIR /root/
 
 # Dev stuff
-RUN yum -y install curl wget
+RUN dnf -y install curl wget python3
 
 # python
-RUN curl "https://bootstrap.pypa.io/pip/2.7/get-pip.py" -o /tmp/get-pip.py && \
-	python /tmp/get-pip.py && \
+RUN curl "https://bootstrap.pypa.io/pip/get-pip.py" -o /tmp/get-pip.py && \
+	python3 /tmp/get-pip.py && \
 	rm /tmp/get-pip.py
 
 # supervisord
-RUN pip install supervisor==3.3.3 && \
+RUN pip install supervisor==4.2.2 && \
 	mkdir -p /var/log/supervisord/
 
 # kerberos server
-RUN yum -y install ntp krb5-server krb5-libs
+RUN dnf -y install krb5-server krb5-libs
 
 # kerberos server configuration
 ENV KRB5_CONFIG=/etc/krb5.conf
