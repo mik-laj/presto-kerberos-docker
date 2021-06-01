@@ -2,4 +2,5 @@
 
 set -euo pipefail
 
-./send-presto-query.sh "SELECT 1"
+SQL=${1:-SELECT 1}
+./send-presto-query.sh "$SQL"
