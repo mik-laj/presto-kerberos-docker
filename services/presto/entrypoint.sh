@@ -56,7 +56,8 @@ if [ ! -f "${JKS_KEYSTORE_FILE}" ]; then
         -keyalg RSA \
         -keystore "${JKS_KEYSTORE_FILE}" \
         -validity 10000 \
-        -dname "cn=Unknown, ou=Unknown, o=Unknown, c=Unknown"\
+        -dname "cn=Unknown, ou=Unknown, o=Unknown, c=Unknown" \
+        -ext "SAN:c=DNS:localhost,IP:127.0.0.1,DNS:presto-kerberos" \
         -storepass "${JKS_KEYSTORE_PASS}"
 fi
 
