@@ -15,6 +15,7 @@ RUN dnf -y install curl wget && dnf clean all
 
 # fforego
 COPY --from=forego-build /go/bin/forego /usr/local/bin/forego
+RUN forego --help
 
 # kerberos server
 RUN dnf -y install krb5-server krb5-libs && dnf clean all
