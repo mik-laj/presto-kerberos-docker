@@ -1,6 +1,9 @@
 # Dockerfile - kdc-server
 #
 # see docker-compose.yml
+FROM golang:1.17 AS forego-build
+
+RUN go install github.com/ddollar/forego@latest
 
 FROM centos:8
 
@@ -11,9 +14,7 @@ WORKDIR /root/
 RUN dnf -y install curl wget && dnf clean all
 
 # fforego
-RUN curl -O https://bin.equinox.io/c/ekMN3bCZFUn/forego-stable-linux-amd64.tgz && \
-    tar xf forego-stable-linux-amd64.tgz && \
-    mv forego /usr/local/bin/forego
+COPY --from=forego-build /go/bin/forego /usr/local/bin/forego
 
 # kerberos server
 RUN dnf -y install krb5-server krb5-libs && dnf clean all
