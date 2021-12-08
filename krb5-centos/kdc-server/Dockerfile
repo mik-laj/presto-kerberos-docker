@@ -11,7 +11,7 @@ WORKDIR /root/
 RUN dnf -y install curl wget && dnf clean all
 
 # fforego
-RUN curl -O https://github.com/metabase/forego/releases/download/stable/forego-stable-linux-amd64.tgz && \
+RUN curl -OL https://github.com/metabase/forego/releases/download/stable/forego-stable-linux-amd64.tgz && \
     tar xf forego-stable-linux-amd64.tgz && \
     mv forego /usr/local/bin/forego
 
