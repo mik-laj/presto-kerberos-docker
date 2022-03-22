@@ -7,6 +7,10 @@ FROM centos:8
 # build environment
 WORKDIR /root/
 
+# moving to old repos
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
 # Dev stuff
 RUN dnf -y install curl wget && dnf clean all
 
